@@ -3,20 +3,20 @@ from .models import Patient
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-
+from rest_framework.views import APIView
 
 #GET  /api/patients => Listar
 #POST /api/patients => Crear
 #GET /api/patients/<pk> => Detalle
 #PUT /api/patients/<pk> => Modificar
-@api_view(['GET', 'POST'])
-def patients(request):
-    if request.method == 'GET':
+class ListPatientsView(APIView):
+    allowed_methods = ['GET', 'POST']
+    def get(self, request):
         patients = Patient.objects.all()
         serializer = PatientSerializer(patients, many=True)
         return Response(serializer.data)
-
-    if request.method == 'POST':
+    
+    def post(self, request):
         serializer = PatientSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
