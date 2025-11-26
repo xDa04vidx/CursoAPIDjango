@@ -4,42 +4,20 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
 
 #GET  /api/patients => Listar
 #POST /api/patients => Crear
 #GET /api/patients/<pk> => Detalle
 #PUT /api/patients/<pk> => Modificar
-class ListPatientsView(APIView):
+class ListPatientsView(ListAPIView, CreateAPIView):
     allowed_methods = ['GET', 'POST']
-    def get(self, request):
-        patients = Patient.objects.all()
-        serializer = PatientSerializer(patients, many=True)
-        return Response(serializer.data)
+    serializer_class = PatientSerializer
+    queryset = Patient.objects.all()
     
-    def post(self, request):
-        serializer = PatientSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT','DELETE'])
-def detail_patient(request, pk):
-    try:
-        patient = Patient.objects.get(id=pk)
-    except Patient.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    if request.method == 'GET':
-        serializer = PatientSerializer(patient)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class DetailPatientView(RetrieveUpdateDestroyAPIView):
+    serializer_class = PatientSerializer
+    queryset = Patient.objects.all()
     
-    if request.method=='PUT':
-        serializer = PatientSerializer(patient, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    if request.method=='DELETE':
-        patient.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
