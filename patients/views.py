@@ -11,13 +11,16 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDe
 #GET /api/patients/<pk> => Detalle
 #PUT /api/patients/<pk> => Modificar
 class ListPatientsView(ListAPIView, CreateAPIView):
+    """
+    Docstring for ListPatientsView
+    Obtiene la lista de pacientes
+    """
     allowed_methods = ['GET', 'POST']
     serializer_class = PatientSerializer
     queryset = Patient.objects.all()
     
-
-
 class DetailPatientView(RetrieveUpdateDestroyAPIView):
+    allowed_methods = ['GET', 'PUT', 'DELETE']
     serializer_class = PatientSerializer
     queryset = Patient.objects.all()
     
